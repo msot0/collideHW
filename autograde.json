@@ -1,0 +1,54 @@
+[
+  {
+    "testName": "sanity",
+    "points": 10
+  },
+  {
+    "testName": "add",
+    "points": 10
+  },
+  {
+    "testName": "arePointsClose",
+    "points": 10
+  },
+  {
+    "testName": "clamp",
+    "points": 10
+  },
+  {
+    "testName": "closestPointOnSegment",
+    "points": 10
+  },
+  {
+    "testName": "cross",
+    "points": 10
+  },
+  {
+    "testName": "distance",
+    "points": 10
+  },
+  {
+    "testName": "dot",
+    "points": 10
+  },
+  {
+    "testName": "inRange",
+    "points": 10
+  },
+  {
+    "testName": "intersectSegment",
+    "points": 10
+  },
+  {
+    "testName": "pointInPolygon",
+    "points": 10
+  },
+  {
+    "testName": "scale",
+    "points": 10
+  },
+  {
+    "testName": "subtract",
+    "points": 10
+  }
+]

@@ -1,0 +1,151 @@
+name: Autograding Tests
+'on':
+  - push
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Sanity
+        id: sanity
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Sanity
+          setup-command: npm install
+          command: npm test sanity
+          timeout: 10
+          max-score: 10
+      - name: Add
+        id: add
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Add
+          setup-command: npm install
+          command: npm test add
+          timeout: 10
+          max-score: 10
+      - name: Are Points-close
+        id: are-points-close
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Are Points-close
+          setup-command: npm install
+          command: npm test arePointsClose
+          timeout: 10
+          max-score: 10
+      - name: Clamp
+        id: clamp
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Clamp
+          setup-command: npm install
+          command: npm test clamp
+          timeout: 10
+          max-score: 10
+      - name: Closest Point-on-segment
+        id: closest-point-on-segment
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Closest Point-on-segment
+          setup-command: npm install
+          command: npm test closestPointOnSegment
+          timeout: 10
+          max-score: 10
+      - name: Cross
+        id: cross
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Cross
+          setup-command: npm install
+          command: npm test cross
+          timeout: 10
+          max-score: 10
+      - name: Distance
+        id: distance
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Distance
+          setup-command: npm install
+          command: npm test distance
+          timeout: 10
+          max-score: 10
+      - name: Dot
+        id: dot
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Dot
+          setup-command: npm install
+          command: npm test dot
+          timeout: 10
+          max-score: 10
+      - name: In Range
+        id: in-range
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: In Range
+          setup-command: npm install
+          command: npm test inRange
+          timeout: 10
+          max-score: 10
+      - name: Intersect Segment
+        id: intersect-segment
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Intersect Segment
+          setup-command: npm install
+          command: npm test intersectSegment
+          timeout: 10
+          max-score: 10
+      - name: Point In-polygon
+        id: point-in-polygon
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Point In-polygon
+          setup-command: npm install
+          command: npm test pointInPolygon
+          timeout: 10
+          max-score: 10
+      - name: Scale
+        id: scale
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Scale
+          setup-command: npm install
+          command: npm test scale
+          timeout: 10
+          max-score: 10
+      - name: Subtract
+        id: subtract
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Subtract
+          setup-command: npm install
+          command: npm test subtract
+          timeout: 10
+          max-score: 10
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          SANITY_RESULTS: ${{steps.sanity.outputs.result}}
+          ADD_RESULTS: ${{steps.add.outputs.result}}
+          ARE-POINTS-CLOSE_RESULTS: ${{steps.are-points-close.outputs.result}}
+          CLAMP_RESULTS: ${{steps.clamp.outputs.result}}
+          CLOSEST-POINT-ON-SEGMENT_RESULTS: ${{steps.closest-point-on-segment.outputs.result}}
+          CROSS_RESULTS: ${{steps.cross.outputs.result}}
+          DISTANCE_RESULTS: ${{steps.distance.outputs.result}}
+          DOT_RESULTS: ${{steps.dot.outputs.result}}
+          IN-RANGE_RESULTS: ${{steps.in-range.outputs.result}}
+          INTERSECT-SEGMENT_RESULTS: ${{steps.intersect-segment.outputs.result}}
+          POINT-IN-POLYGON_RESULTS: ${{steps.point-in-polygon.outputs.result}}
+          SCALE_RESULTS: ${{steps.scale.outputs.result}}
+          SUBTRACT_RESULTS: ${{steps.subtract.outputs.result}}
+        with:
+          runners: >-
+            sanity,add,are-points-close,clamp,closest-point-on-segment,cross,distance,dot,in-range,intersect-segment,point-in-polygon,scale,subtract
