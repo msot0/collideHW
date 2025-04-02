@@ -30,7 +30,8 @@ export type Shape = Pt | Polyline | Polygon;
 
 /** Create a 2D point with the given coordinates. */
 export const createPt = (x: number, y: number): Pt => {
-  return { kind: "Pt", x, y };
+  return { kind: "Pt", x, y }; 
+  
 };
 
 // ---------------------------------------------------------    [ Operations ]
@@ -40,15 +41,15 @@ export const createPt = (x: number, y: number): Pt => {
 /** Compute the squared distance from point a to point b. To do this, calculate
  * the difference the x and y values, square them, and add them together.*/
 export const distanceSq = (a: Pt, b: Pt): number => {
-  // IMPLEMENT
-  return NaN;
+  const deltaX = a.x - b.x
+  const deltaY = a.y - b.y;
+  return deltaX * deltaX + deltaY * deltaY ;
 };
 
 /** Compute the distance between points a and b. You can use the distanceSq
  * function to do this. Just take the square root. */
 export const distance = (a: Pt, b: Pt): number => {
-  // IMPLEMENT
-  return NaN;
+  return Math.sqrt(distanceSq(a,b));
 };
 
 /**
@@ -57,8 +58,8 @@ export const distance = (a: Pt, b: Pt): number => {
  * the dot product is 1 * 3 + 2 * 4 = 3 + 8 = 11.
  */
 export const dot = (a: Pt, b: Pt): number => {
-  // IMPLEMENT
-  return NaN;
+  return a.x * b.x + a.y * b.y;
+  
 };
 
 /**
@@ -74,15 +75,14 @@ export const dot = (a: Pt, b: Pt): number => {
  * Then the determinant is a.x * b.y - a.y * b.x.
  **/
 export const cross = (a: Pt, b: Pt): number => {
-  // IMPLEMENT
-  return NaN;
+  return a.x * b.y - a.y * b.x;
 };
 
 /** Adds two points (vectors) together. Just sum their x and y values and make a
  * new point out of those sums. */
 export const add = (a: Pt, b: Pt): Pt => {
-  // IMPLEMENT
-  return null as unknown as Pt;
+  return { kind: "Pt", x: a.x + b.x, y: a.y + b.y};
+
 };
 
 /** Subtracts two points (vectors): "a - b" gives you another vector that tells
@@ -91,15 +91,13 @@ export const add = (a: Pt, b: Pt): Pt => {
  * that to get from b to a, you need to go left 3 and down 4.
  **/
 export const subtract = (a: Pt, b: Pt): Pt => {
-  // IMPLEMENT
-  return null as unknown as Pt;
+  return {kind: "Pt", x: a.x - b.x, y: a.y - b.y};
 };
 
 /** Scale the given point (vector) by some amount. For example, if a = (3, 5)
  * and we scale it by 2, then the result is (3 * 2, 5 * 2) = (6, 10) */
 export const scale = (a: Pt, s: number): Pt => {
-  // IMPLEMENT
-  return null as unknown as Pt;
+  return { kind: "Pt", x: a.x * s, y: a.y *s};
 };
 
 /**
@@ -107,8 +105,7 @@ export const scale = (a: Pt, s: number): Pt => {
  * can and should use your implementation of distanceSq or distance from above.
  **/
 export const arePointsClose = (a: Pt, b: Pt, threshold: number): boolean => {
-  // IMPLEMENT
-  return false;
+   return distanceSq(a,b) <= threshold * threshold;
 };
 
 /**
@@ -120,8 +117,7 @@ export const arePointsClose = (a: Pt, b: Pt, threshold: number): boolean => {
  * - inRange(1.5, 0, 2) returns true
  **/
 export const inRange = (t: number, lowerBound = 0, upperBound = 1): boolean => {
-  // IMPLEMENT
-  return false;
+  return t >= lowerBound && t <= upperBound; 
 };
 
 /**
@@ -134,8 +130,13 @@ export const inRange = (t: number, lowerBound = 0, upperBound = 1): boolean => {
  * - clamp(1.5, 0, 2) returns 1.5 because it is in the range.
  **/
 export const clamp = (t: number, lowerBound = 0, upperBound = 1): number => {
-  // IMPLEMENT
-  return NaN;
+  if (t < lowerBound) {
+    return lowerBound;
+  } else if (t > upperBound) {
+    return upperBound; 
+  } else {
+    return t;
+  } 
 };
 
 /**
@@ -157,7 +158,21 @@ export const closestPointOnSegment = ({
   closestPt: Pt; // closest point on the line
   closestPtOnSeg: Pt; // closest point on the segment
 } => {
-  // IMPLEMENT
+  const ab = subtract(segB, segA);
+  const abDotAb = dot(ab, ab);
+  if (abDotAb === 0) {
+    return {
+      t: 0,
+      closestPt: segA,
+      closestPtOnSeg: segA,
+    };
+  }
+  const ap = subtract(p, segA); 
+  const t = dot(ap, ab) / abDotAb; 
+  const closestPt = add(segA, scale(ab, t)); 
+  const clampedT = clamp(t); 
+  const closestPtOnSeg = add(segA, scale(ab, clampedT)); 
+
 
   /*
     Pseudocode taken from collision book's C++ (page 128):
@@ -178,11 +193,11 @@ export const closestPointOnSegment = ({
     closestPtOnSeg = a + clampedT * ab : scale and add
   */
 
-  return null as unknown as {
-    t: number;
-    closestPt: Pt;
-    closestPtOnSeg: Pt;
-  };
+    return {
+      t,
+      closestPt,
+      closestPtOnSeg,
+    };
 };
 
 /**
@@ -212,7 +227,19 @@ export const intersectSegment = ({
   segBStart: Pt;
   segBEnd: Pt;
 }): { t: number; u: number; intersectionPt: Pt } | null => {
-  // IMPLEMENT
+  const segA = subtract(segAEnd, segAStart);
+  const segB = subtract(segBEnd, segBStart);
+  const denom = cross(segA, segB);
+  if (Math.abs(denom)  < 1e-10) {
+    return null;
+  }
+  const delta = subtract(segBStart, segAStart);
+  const t = cross(delta, segB) / denom;
+  const u = cross(delta, segA) / denom;
+   
+  const dirA = scale(segA,t);
+  const intersectionPt = add(segAStart, dirA);
+  return { t, u, intersectionPt };
 
   /*
     Pseudocode, using many of the functions you implemented above:
@@ -252,7 +279,25 @@ export const testPointInPolygon = ({
   pt: Pt;
   polygon: Polygon;
 }): boolean => {
-  // IMPLEMENT
+  const vertices = polygon.vertices;
+  const n = vertices.length;
+  if (n < 3) {
+    return false;
+  }
+  let count = 0;
+  for (let i = 0; i < n; i++) {
+    const v1 = vertices[i];
+    const v2 = vertices[(i + 1) % n]; 
+
+    if (
+      (v1.y > pt.y) !== (v2.y > pt.y) && 
+      pt.x < ((v2.x - v1.x) * (pt.y - v1.y)) / (v2.y - v1.y) + v1.x
+    ) {
+      count++;
+    }
+  }
+
+  return count % 2 === 1;
   /*
     Pseudocode:
 
